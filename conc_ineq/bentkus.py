@@ -113,9 +113,13 @@ class QFunc(object):
             )
             delta_left = self.delta_func(left)
 
+            # delta_left is evaluated at ratio_left. If delta >= delta_left,
+            # then mu1 <= ratio_left as P2 function is monotonically decreasing.
+            # Search through pieces with index 0, ... left
             if delta >= delta_left:
                 search_left = 0
                 search_right = min(self.n - 1, left)
+            # Otherwise search through pieces with index left + 1, ..., right
             else:
                 search_left = left + 1
                 search_right = min(self.n - 1, right + 1)
