@@ -113,14 +113,20 @@ class QFunc(object):
             )
             delta_left = self.delta_func(left)
 
+            #  delta_left is evaluated at ratio_left. If delta >= delta_left,
+            #  then mu1 <= ratio_left as P2 function is monotonically decreasing.
+            #  Search through pieces with index 0, ... left
+            #  search_left and search_right is for k - 1: which is the index of delta_u
+            #  search_left == -1 corresponds to the case where delta is between [v0/e0, 1]
             if delta >= delta_left:
-                search_left = 0
+                search_left =  -1
                 search_right = min(self.n - 1, left)
+            # Otherwise search through pieces with index left + 1, ..., right
             else:
-                search_left = left + 1
+                search_left = left
                 search_right = min(self.n - 1, right + 1)
 
-            # search_right is for delta_u, which is indexed by k-1. k only goes up to
+            # delta_u is indexed by k-1. k only goes up to
             # n-1. In this case, the right boundary should be the lowest delta possible.
             if search_right == self.n - 1:
                 delta_b = self.bias ** self.n
@@ -143,7 +149,7 @@ class QFunc(object):
                         vv = vv + k_1 ** 2 * self.mass[k_1]
 
                     delta_u = self.delta_func(k_1, pp, ee, vv)
-                # print(delta_u, delta_b, delta)
+
                 if delta_b < delta and delta <= delta_u:
                     if k_1 == -1:
                         mu1 = self.nb + np.sqrt(
