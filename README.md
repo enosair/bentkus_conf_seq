@@ -8,13 +8,13 @@ This repo contains demo code for the following paper, to compute the confidence 
 ### Introduction
 
 *Let Y1, Y2, . . . be independent real-valued random variables, available sequentially, with mean mu.
-A 1-delta confidence sequence is a sequence of confidence interval {CI_1, CI_2, ...} where CI_n is 
+A 1-delta confidence sequence is a sequence of confidence intervals {CI_1, CI_2, ...} where CI_n is 
 constructed on-the-fly after observing data sample Yn, such that
 Pr( mu in CI_n for all n >= 1) >= 1 - delta.*
 
 Many inference problems are online nature. Examples includes sequential decision problems like A/B testing, adaptive
 sampling schemes like bandit selection, etc. Practitioners often wants to stop data sampling or processing when a
-required guarantee is satisfied. Confidence sequence is used to help determine the number of samples you need, i.e.
+required guarantee is satisfied. Confidence sequence is used to help people determine the number of samples you need, i.e.
 the stopping time.
 
 We provide a Bentkus confidence sequence that improves on the exisiting approaches that use Cramér-Chernoff techniques 
