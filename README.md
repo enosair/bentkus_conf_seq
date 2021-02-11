@@ -26,3 +26,6 @@ We provide a Bentkus confidence sequence that improves on the exisiting approach
 - `ci_expr.py`: code to run a single uniform confidence sequence coverage experiment
 - `ada_stop.py`: code to run a single adaptive stopping experiment for (epsilon, delta) mean estimation.
 - `*.ipynb`: code to generate the plots in our paper.
+
+### Code Dependency
+- To run the HRMS Bernstein method, you need to install confseq: https://github.com/gostevehoward/confseq https://pypi.org/project/confseq/
