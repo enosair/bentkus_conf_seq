@@ -25,6 +25,7 @@ We provide a Bentkus confidence sequence that improves on the exisiting approach
 - `conc_ineq`: Hoeffding-type, Bernstein-type, and Bentkus' methods for pointwise and uniform bounds.
 - `ci_expr.py`: code to run a single uniform confidence sequence coverage experiment
 - `ada_stop.py`: code to run a single adaptive stopping experiment for (epsilon, delta) mean estimation.
+- `best_arm.ipynb`: code to run the best arm identification experiment and generate the related plots.
 - `*.ipynb`: code to generate the plots in our paper.
 
 ### Code Dependency
