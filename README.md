@@ -2,13 +2,13 @@
 
 This repo contains demo code for the following paper, to compute the confidence sequence and/or the uniform upper/lower bounds for bounded random variables using Adaptive Bentkus' method.
 
-> Arun Kumar Kuchibhotla, Qinqing Zheng. *Near-Optimal Confidence Sequences for Bounded Random Variables*.  [[arXiv:2006.05022](https://arxiv.org/abs/2006.05022)].
+> Arun Kumar Kuchibhotla\*, Qinqing Zheng\*.  *Near-Optimal Confidence Sequences for Bounded Random Variables*. (\* Equal contribution.) [[arXiv:2006.05022](https://arxiv.org/abs/2006.05022)].
 
 
 ### Introduction
 
 *Let Y1, Y2, . . . be independent real-valued random variables, available sequentially, with mean mu.
-A 1-delta confidence sequence is a sequence of confidence intervals {CI_1, CI_2, ...} where CI_n is 
+A 1-delta confidence sequence is a sequence of confidence intervals {CI_1, CI_2, ...} where CI_n is
 constructed on-the-fly after observing data sample Yn, such that
 Pr( mu in CI_n for all n >= 1) >= 1 - delta.*
 
@@ -17,15 +17,15 @@ sampling schemes like bandit selection, etc. Practitioners often wants to stop d
 required guarantee is satisfied. Confidence sequence is used to help people determine the number of samples you need, i.e.
 the stopping time.
 
-We provide a Bentkus confidence sequence that improves on the exisiting approaches that use Cramér-Chernoff techniques 
+We provide a Bentkus confidence sequence that improves on the exisiting approaches that use Cramér-Chernoff techniques
 (e.g. Hoeffding, Bernstein, Bennett).
 
 
 ### Code organization
-- `conc_ineq`: Hoeffding-type, Bernstein-type, and Bentkus' methods for pointwise and uniform bounds. 
+- `conc_ineq`: Hoeffding-type, Bernstein-type, and Bentkus' methods for pointwise and uniform bounds.
 - `ci_expr.py`: code to run a single uniform confidence sequence coverage experiment
 - `ada_stop.py`: code to run a single adaptive stopping experiment for (epsilon, delta) mean estimation.
 - `*.ipynb`: code to generate the plots in our paper.
 
 ### Code Dependency
-- To run the HRMS Bernstein method, you need to install confseq: https://github.com/gostevehoward/confseq https://pypi.org/project/confseq/
+- To run the HRMS Bernstein methods, you need to install [[confseq](https://github.com/gostevehoward/confseqi)].

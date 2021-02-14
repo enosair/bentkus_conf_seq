@@ -10,6 +10,7 @@ class QFunc(object):
     """
         Class for computing the q(delta; n, A, B) function in Bentkus ConfSeq paper.
     """
+
     def __init__(self, n, A=0.5, B=1.0):
         self.n = n
         self.A = A
@@ -119,7 +120,7 @@ class QFunc(object):
             #  search_left and search_right is for k - 1: which is the index of delta_u
             #  search_left == -1 corresponds to the case where delta is between [v0/e0, 1]
             if delta >= delta_left:
-                search_left =  -1
+                search_left = -1
                 search_right = min(self.n - 1, left)
             # Otherwise search through pieces with index left + 1, ..., right
             else:
@@ -182,6 +183,7 @@ class QFunc(object):
             #         vv = vv - (k - 1) ** 2 * self.mass[k - 1]
 
             #     delta_b = self.delta_func(k, pp, ee, vv)
+            #     print("U: {}, B: {}, delta: {}".format(delta_u, delta_b, delta))
             #     if delta_b < delta and delta <= delta_u:
             #         if k == 0:
             #             mu1 = self.nb + np.sqrt(
@@ -193,6 +195,7 @@ class QFunc(object):
             #             c = vv + (ee ** 2 - vv * pp) / delta
             #             mu1 = (-b + np.sqrt(b ** 2 - 4.0 * a * c)) / 2.0 / a
             #         success = True
+            #         print("k: {}".format(k))
             #         break
             #     else:
             #         delta_u = delta_b
@@ -425,7 +428,112 @@ def adaptive_bentkus_seq(Y, delta, L, U, eta=1.1, power=1.1):
 
                 Abar_min_prev = Abar_min
 
-    print("final Abar_min: {}".format(Abar_min))
+    # print("final Abar_min: {}".format(Abar_min))
+    return mu_low, mu_up, Sn_low, Sn_up
+
+
+def adaptive_bentkus_seq_untruncated(Y, delta, L, U, eta=1.1, power=1.1):
+    """
+        The version output upper and lower bounds that are not cumulative
+        minimum or maximum, to be used for the best arm bandit algorithm.
+
+        Input:
+            Y: An array of bounded r.v. Yi's with mean mu
+            delta: error probability
+            L, U: Pr(L <= Yi <= U) = 1
+            eta, power: parameters for stitching.
+
+        Output:
+            mu_low, mu_up: (1-delta) confidence sequence of mu (untruncated)
+            Sn_low, Sn_up: (1-delta) confidence sequence of S1, S2, ...
+    """
+    std_upper_bound = (U - L) / 2.0
+
+    delta_1 = 2 * delta / 3  # for q function
+    delta_2 = delta - delta_1  # for the upper bound of std
+
+    N = Y.size
+
+    c = scipy.special.zeta(x=power, q=1)
+
+    def h(k):
+        return (k + 1) ** power * c
+
+    def g_function(n, nmax, delta_2_k):
+        quantitle = scipy.stats.norm.ppf(1 - 2 * delta_2_k / np.exp(2))
+        return (
+            np.sqrt(np.floor(nmax / 2.0)) * (U - L) * quantitle / (n * 2 * np.sqrt(2))
+        )
+
+    # prepare return values
+    mu_up = np.zeros(N)
+    mu_low = np.zeros(N)
+    Sn_up = np.zeros(N)
+    Sn_low = np.zeros(N)
+
+    # iterate through all intervals [ceil(eta**k), floor(eta**(k+1))]
+    sq_diff = 0.0
+    Ahat = np.inf
+    Ymean = np.cumsum(Y) / np.arange(1, N + 1)
+    Abar_min_prev = std_upper_bound
+
+    kmax = np.ceil(math.log(N, eta))
+    for k in np.arange(max(kmax, 1)):
+        nmin = int(np.ceil((eta ** k)))
+        nmax = int(np.floor(eta ** (k + 1)))
+        if nmax >= nmin:
+            delta_1_k = delta_1 / h(k)
+            delta_2_k = delta_2 / h(k)
+
+            for n in np.arange(nmin, min(nmax, N) + 1):
+
+                if n == 1:
+                    Abar = std_upper_bound
+                    g = 0.0
+                else:
+                    if n % 2 == 0:
+                        sq_diff += (Y[n - 1] - Y[n - 2]) ** 2 / 2.0
+                        Ahat = np.sqrt(sq_diff / np.floor(n / 2.0))
+                    g = g_function(n, nmax, delta_2_k)
+                    Abar = np.sqrt(Ahat ** 2 + g ** 2) + g
+
+                Abar_min = min(Abar, Abar_min_prev)
+
+                if (
+                    n <= 2
+                    or n == nmin
+                    or Abar_min != Abar_min_prev
+                    or mu_up[n - 2] != mu_up[n - 3]
+                ):
+                    q_up_func = QFunc(
+                        n=nmax, A=Abar_min, B=mu_up[n - 2] - L if n >= 2 else U - L
+                    )
+                    Sn_low[n - 1] = -q_up_func(delta_1_k / 2.0)
+                else:
+                    Sn_low[n - 1] = Sn_low[n - 2]
+
+                ### No minimum anymore
+                mu_up[n - 1] = Ymean[n - 1] - Sn_low[n - 1] / n
+
+                if (
+                    n <= 2
+                    or n == nmin
+                    or Abar_min != Abar_min_prev
+                    or mu_low[n - 2] != mu_low[n - 3]
+                ):
+                    q_low_func = QFunc(
+                        n=nmax, A=Abar_min, B=U - mu_low[n - 2] if n >= 2 else U - L
+                    )
+                    Sn_up[n - 1] = q_low_func(delta_1_k / 2.0)
+                else:
+                    Sn_up[n - 1] = Sn_up[n - 2]
+
+                ### No maximum anymore
+                mu_low[n - 1] = Ymean[n - 1] - Sn_up[n - 1] / n
+
+                Abar_min_prev = Abar_min
+
+    # print("final Abar_min: {}".format(Abar_min))
     return mu_low, mu_up, Sn_low, Sn_up
 
 
