@@ -29,4 +29,4 @@ We provide a Bentkus confidence sequence that improves on the exisiting approach
 - `*.ipynb`: code to generate the plots in our paper.
 
 ### Code Dependency
-- To run the HRMS Bernstein methods, you need to install [[confseq](https://github.com/gostevehoward/confseqi)].
+- To run the HRMS Bernstein methods, you need to install [[confseq](https://github.com/gostevehoward/confseq)].
