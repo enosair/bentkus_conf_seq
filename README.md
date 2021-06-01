@@ -2,7 +2,7 @@
 
 This repo contains demo code for the following paper, to compute the confidence sequence and/or the uniform upper/lower bounds for bounded random variables using Adaptive Bentkus' method.
 
-> Arun Kumar Kuchibhotla\*, Qinqing Zheng\*.  *Near-Optimal Confidence Sequences for Bounded Random Variables*. (\* Equal contribution.) [[arXiv:2006.05022](https://arxiv.org/abs/2006.05022)].
+> Arun Kumar Kuchibhotla\*, Qinqing Zheng\*.  *Near-Optimal Confidence Sequences for Bounded Random Variables*. (\* Equal contribution.) ICML 2021. [[arXiv:2006.05022](https://arxiv.org/abs/2006.05022)].
 
 
 ### Introduction
